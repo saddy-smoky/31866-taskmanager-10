@@ -1,13 +1,8 @@
 import flatpickr from 'flatpickr';
-/* import 'flatpickr/dist/flatpickr.min.css';
-import 'flatpickr/dist/themes/light.css';*/
 import AbstractSmartComponent from './abstract-smart-component.js';
 import {COLORS, DAYS} from '../const.js';
-import {formatTime, formatDate} from '../utils/common.js';
+import {formatTime, formatDate, isRepeating, isOverdueDate} from '../utils/common.js';
 
-const isRepeating = (repeatingDays) => {
-  return Object.values(repeatingDays).some(Boolean);
-};
 
 const createColorsMarkup = (colors, currentColor) => {
   return colors
@@ -80,7 +75,7 @@ const createTaskEditTemplate = (task, options = {}) => {
   const {description, tags, dueDate, color} = task;
   const {isDateShowing, isRepeatingTask, activeRepeatingDays} = options;
 
-  const isExpired = dueDate instanceof Date && dueDate < Date.now();
+  const isExpired = dueDate instanceof Date && isOverdueDate(dueDate, new Date());
   const isBlockSaveButton = (isDateShowing && isRepeatingTask) ||
     (isRepeatingTask && !isRepeating(activeRepeatingDays));
 
@@ -220,6 +215,13 @@ export default class TaskEdit extends AbstractSmartComponent {
   setSubmitHandler(handler) {
     this.getElement().querySelector(`form`)
       .addEventListener(`submit`, handler);
+  }
+
+  setDeleteButtonClickHandler(handler) {
+    this.getElement().querySelector(`.card__delete`)
+      .addEventListener(`click`, handler);
+
+    this._deleteButtonClickHandler = handler;
   }
 
   _applyFlatpickr() {
