@@ -1,5 +1,11 @@
 import AbstractComponent from "./abstract-component";
 
+export const MenuItem = {
+  NEW_TASK: `control__new-task`,
+  STATISTICS: `control__statistic`,
+  TASKS: `control__task`,
+};
+
 const createSiteMenuTemplate = () =>
   `<section class="control__btn-wrap">
           <input
@@ -30,8 +36,28 @@ const createSiteMenuTemplate = () =>
           >
         </section>`;
 
-export default class SiteMenu extends AbstractComponent {
+export default class SiteMenuComponent extends AbstractComponent {
   getTemplate() {
     createSiteMenuTemplate();
+  }
+
+  setActiveItem(menuItem) {
+    const item = this.getElement().querySelector(`#${menuItem}`);
+
+    if (item) {
+      item.checked = true;
+    }
+  }
+
+  setOnChange(handler) {
+    this.getElement().addEventListener(`change`, (evt) => {
+      if (evt.target.tagName !== `INPUT`) {
+        return;
+      }
+
+      const menuItem = evt.target.id;
+
+      handler(menuItem);
+    });
   }
 }
